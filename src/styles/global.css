@@ -1,0 +1,322 @@
+:root {
+  --bg: #fbf7f0;
+  --panel: #ffffff;
+  --panel-now: #fff7e6;
+  --ink: #4a423a;
+  --ink-soft: #8a8178;
+  --accent: #f6b93b;
+  --accent-strong: #e09b1f;
+  --line: #ece4d8;
+  --radius: 16px;
+  --shadow: 0 4px 14px rgba(120, 100, 70, 0.07);
+
+  font-family: 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Yu Gothic',
+    system-ui, sans-serif;
+  color: var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+}
+
+/* ====== ボード全体 ====== */
+.board {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(12px, 1.4vw, 22px);
+  gap: clamp(8px, 1vw, 14px);
+}
+
+/* ====== ヘッダー ====== */
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(6px, 0.6vw, 10px);
+}
+
+.board-title {
+  margin: 0;
+  font-size: clamp(18px, 1.9vw, 30px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.board-clock {
+  font-size: clamp(18px, 1.9vw, 30px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-strong);
+}
+
+.header-presence {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.6vw, 10px);
+}
+
+.header-presence-label {
+  font-size: clamp(11px, 1vw, 15px);
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* ====== 3カラムグリッド（昼/夕方/夜を平等に） ====== */
+.board-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(8px, 1vw, 14px);
+  min-height: 0;
+}
+
+/* ====== 時間帯の列 ====== */
+.time-block {
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(10px, 1.1vw, 18px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 0.9vw, 14px);
+  overflow-y: auto;
+}
+
+.time-block--now {
+  background: var(--panel-now);
+  border-color: var(--accent);
+  box-shadow: 0 6px 20px rgba(240, 155, 31, 0.18);
+}
+
+.time-block-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1.5px dashed var(--line);
+  padding-bottom: clamp(6px, 0.7vw, 10px);
+}
+
+.time-block-label {
+  font-size: clamp(16px, 1.5vw, 24px);
+  font-weight: 800;
+}
+
+.time-block-range {
+  font-size: clamp(11px, 1vw, 15px);
+  color: var(--ink-soft);
+}
+
+.time-block-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: clamp(10px, 0.85vw, 13px);
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+
+/* ====== いそうな人数（在室中＋今後きそうな人の幅） ====== */
+.time-block-occupancy {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.occupancy-label {
+  font-size: clamp(11px, 1vw, 14px);
+  color: var(--ink-soft);
+}
+
+.occupancy-value {
+  font-size: clamp(16px, 1.6vw, 26px);
+  font-weight: 800;
+  color: var(--accent-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ====== 見出し共通 ====== */
+.activities-heading,
+.people-heading {
+  margin: 0 0 4px;
+  font-size: clamp(12px, 1.1vw, 16px);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* ====== 活動 ====== */
+.activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(5px, 0.6vw, 9px);
+}
+
+.activity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.face-icon {
+  flex: 0 0 auto;
+}
+
+/* 文字サイズは全活動で統一（確率で大小をつけない） */
+.activity-name {
+  font-size: clamp(13px, 1.2vw, 19px);
+  font-weight: 700;
+}
+
+
+.activities-empty,
+.people-empty {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: clamp(12px, 1.1vw, 16px);
+}
+
+/* ====== いそうな人 ====== */
+.people {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 0.7vw, 10px);
+}
+
+/* 来訪しそう度合いごとのグループ */
+.people-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.people-group-label {
+  font-size: clamp(10px, 0.9vw, 13px);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.people-group--likely .people-group-label {
+  color: var(--accent-strong);
+}
+
+.people-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(6px, 0.7vw, 10px);
+}
+
+.avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: clamp(40px, 4vw, 58px);
+}
+
+.avatar-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: #fff;
+  object-fit: cover;
+}
+
+.avatar--maybe .avatar-img {
+  filter: grayscale(0.4);
+  border-style: dashed;
+}
+
+.avatar-name {
+  font-size: clamp(10px, 0.9vw, 13px);
+  color: var(--ink-soft);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ====== フッター ====== */
+.board-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: clamp(7px, 0.8vw, 12px) clamp(12px, 1.3vw, 20px);
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.presence {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+}
+
+.presence-count {
+  font-size: clamp(13px, 1.2vw, 19px);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.presence-avatars {
+  display: flex;
+  align-items: center;
+}
+
+.presence-avatar {
+  width: clamp(26px, 2.6vw, 40px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 2px solid var(--panel);
+  background: #fff;
+  object-fit: cover;
+  box-shadow: 0 1px 3px rgba(120, 100, 70, 0.15);
+}
+
+/* アイコンを少し重ねて並べる */
+.presence-avatar:not(:first-child) {
+  margin-left: clamp(-10px, -0.8vw, -6px);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+  color: var(--ink-soft);
+}
+
+.legend-label {
+  font-size: clamp(11px, 1vw, 14px);
+  font-weight: 700;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-text {
+  font-size: clamp(10px, 0.9vw, 13px);
+}
