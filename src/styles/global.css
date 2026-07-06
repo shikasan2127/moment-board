@@ -152,8 +152,7 @@ body {
 }
 
 /* ====== 見出し共通 ====== */
-.activities-heading,
-.people-heading {
+.activities-heading {
   margin: 0 0 4px;
   font-size: clamp(15px, 1.5vw, 24px);
   font-weight: 700;
@@ -205,39 +204,18 @@ body {
 /* ====== いそうな人 ====== */
 .people {
   flex-shrink: 0;
+}
+
+.people-row {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: clamp(4px, 0.5vw, 8px);
 }
 
-/* 来訪しそう度合いごとのグループを横並び */
-.people-groups {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(8px, 1vw, 16px);
-}
-
-.people-group {
-  display: flex;
-  align-items: center;
-  gap: clamp(6px, 0.7vw, 10px);
-}
-
-.people-group-label {
-  font-size: clamp(13px, 1.3vw, 20px);
-  font-weight: 700;
-  color: var(--ink-soft);
-  white-space: nowrap;
-}
-
-.people-group--likely .people-group-label {
-  color: var(--accent-strong);
-}
-
-.people-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(6px, 0.7vw, 10px);
+/* people内のアバターは小さめ固定でなるべく1行に収める */
+.people-row .avatar {
+  width: clamp(40px, 4vw, 60px);
+  flex-shrink: 1;
 }
 
 .avatar {
