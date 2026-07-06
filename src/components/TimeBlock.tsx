@@ -31,7 +31,7 @@ export function TimeBlock({ block, presentCount }: Props) {
       </header>
 
       <div className="time-block-activities">
-        <h3 className="activities-heading">あそび</h3>
+        <h3 className="activities-heading">活動</h3>
         {groups.length === 0 ? (
           <p className="activities-empty">—</p>
         ) : (
