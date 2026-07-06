@@ -106,7 +106,7 @@ body {
 .time-block-header {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: clamp(6px, 0.8vw, 12px);
   flex-wrap: wrap;
   border-bottom: 1.5px dashed var(--line);
   padding-bottom: clamp(6px, 0.7vw, 10px);
@@ -130,18 +130,6 @@ body {
   font-weight: 700;
   padding: 4px 14px;
   border-radius: 999px;
-}
-
-/* ====== いそうな人数（在室中＋今後きそうな人の幅） ====== */
-.time-block-occupancy {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.occupancy-label {
-  font-size: clamp(11px, 1vw, 14px);
-  color: var(--ink-soft);
 }
 
 .occupancy-value {

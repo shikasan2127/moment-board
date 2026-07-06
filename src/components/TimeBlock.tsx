@@ -27,12 +27,9 @@ export function TimeBlock({ block, presentCount }: Props) {
     <section className={`time-block${block.isNow ? ' time-block--now' : ''}`}>
       <header className="time-block-header">
         <span className="time-block-label">{block.label}</span>
-{block.isNow && <span className="time-block-badge">いま</span>}
-      </header>
-
-      <div className="time-block-occupancy">
         <span className="occupancy-value">{occupancyText}</span>
-      </div>
+        {block.isNow && <span className="time-block-badge">いま</span>}
+      </header>
 
       <div className="time-block-activities">
         <h3 className="activities-heading">あそび</h3>
