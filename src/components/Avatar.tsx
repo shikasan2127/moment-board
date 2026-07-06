@@ -19,7 +19,6 @@ export function Avatar({ person }: Props) {
         style={{ opacity }}
         className="avatar-img"
       />
-      <span className="avatar-name">{person.name}</span>
     </div>
   )
 }
