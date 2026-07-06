@@ -49,13 +49,13 @@ body {
 
 .board-title {
   margin: 0;
-  font-size: clamp(18px, 1.9vw, 30px);
+  font-size: clamp(24px, 2.6vw, 42px);
   font-weight: 800;
   letter-spacing: 0.04em;
 }
 
 .board-clock {
-  font-size: clamp(18px, 1.9vw, 30px);
+  font-size: clamp(24px, 2.6vw, 42px);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--accent-strong);
@@ -68,7 +68,7 @@ body {
 }
 
 .header-presence-label {
-  font-size: clamp(11px, 1vw, 15px);
+  font-size: clamp(14px, 1.4vw, 22px);
   font-weight: 700;
   color: var(--ink-soft);
   white-space: nowrap;
@@ -89,10 +89,10 @@ body {
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: clamp(10px, 1.1vw, 18px);
+  padding: clamp(14px, 1.8vw, 28px);
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 0.9vw, 14px);
+  gap: clamp(12px, 1.4vw, 22px);
   overflow-y: auto;
 }
 
@@ -112,12 +112,12 @@ body {
 }
 
 .time-block-label {
-  font-size: clamp(16px, 1.5vw, 24px);
+  font-size: clamp(28px, 3.2vw, 52px);
   font-weight: 800;
 }
 
 .time-block-range {
-  font-size: clamp(11px, 1vw, 15px);
+  font-size: clamp(14px, 1.4vw, 22px);
   color: var(--ink-soft);
 }
 
@@ -125,9 +125,9 @@ body {
   margin-left: auto;
   background: var(--accent);
   color: #fff;
-  font-size: clamp(10px, 0.85vw, 13px);
+  font-size: clamp(12px, 1.1vw, 17px);
   font-weight: 700;
-  padding: 2px 9px;
+  padding: 3px 12px;
   border-radius: 999px;
 }
 
@@ -144,7 +144,7 @@ body {
 }
 
 .occupancy-value {
-  font-size: clamp(16px, 1.6vw, 26px);
+  font-size: clamp(36px, 4.2vw, 68px);
   font-weight: 800;
   color: var(--accent-strong);
   font-variant-numeric: tabular-nums;
@@ -154,7 +154,7 @@ body {
 .activities-heading,
 .people-heading {
   margin: 0 0 4px;
-  font-size: clamp(12px, 1.1vw, 16px);
+  font-size: clamp(15px, 1.5vw, 24px);
   font-weight: 700;
   color: var(--ink-soft);
 }
@@ -181,7 +181,7 @@ body {
 
 /* 文字サイズは全活動で統一（確率で大小をつけない） */
 .activity-name {
-  font-size: clamp(13px, 1.2vw, 19px);
+  font-size: clamp(22px, 2.8vw, 44px);
   font-weight: 700;
 }
 
@@ -209,7 +209,7 @@ body {
 }
 
 .people-group-label {
-  font-size: clamp(10px, 0.9vw, 13px);
+  font-size: clamp(13px, 1.3vw, 20px);
   font-weight: 700;
   color: var(--ink-soft);
 }
@@ -228,8 +228,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  width: clamp(40px, 4vw, 58px);
+  gap: 4px;
+  width: clamp(54px, 6vw, 88px);
 }
 
 .avatar-img {
@@ -247,7 +247,7 @@ body {
 }
 
 .avatar-name {
-  font-size: clamp(10px, 0.9vw, 13px);
+  font-size: clamp(12px, 1.2vw, 18px);
   color: var(--ink-soft);
   text-align: center;
   white-space: nowrap;
@@ -285,7 +285,7 @@ body {
 }
 
 .presence-avatar {
-  width: clamp(26px, 2.6vw, 40px);
+  width: clamp(36px, 3.6vw, 56px);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 2px solid var(--panel);

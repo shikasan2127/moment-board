@@ -9,7 +9,7 @@ interface Props {
 export function Activity({ activity }: Props) {
   return (
     <li className="activity">
-      <FaceIcon level={activity.likelihood} size={26} />
+      <FaceIcon level={activity.likelihood} size={40} />
       <span className="activity-name">{activity.name}</span>
     </li>
   )
