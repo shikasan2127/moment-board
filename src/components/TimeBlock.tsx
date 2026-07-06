@@ -43,7 +43,7 @@ export function TimeBlock({ block, presentCount }: Props) {
           <ul className="activity-list">
             {groups.map(({ level, activities }) => (
               <li key={level} className="activity-group">
-                <FaceIcon level={level} size={40} />
+                <FaceIcon level={level} size={52} />
                 <div className="activity-group-names">
                   {activities.map((a) => (
                     <span key={a.name} className="activity-name">{a.name}</span>
