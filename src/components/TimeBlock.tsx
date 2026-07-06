@@ -28,7 +28,6 @@ export function TimeBlock({ block, presentCount }: Props) {
       <header className="time-block-header">
         <span className="time-block-label">{block.label}</span>
         <span className="occupancy-value">{occupancyText}</span>
-        {block.isNow && <span className="time-block-badge">いま</span>}
       </header>
 
       <div className="time-block-activities">
