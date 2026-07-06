@@ -8,10 +8,10 @@ interface Props {
 
 const ARRIVAL_ORDER: Arrival[] = ['likely', 'maybe']
 
-/** 来訪しそうな人を表示。1行に収まれば大きく、収まらなければ小さく折り返す。 */
+/** 来訪しそうな人を1行で表示。多い時はアイコンを重ねて収める。 */
 export function People({ people }: Props) {
   const rowRef = useRef<HTMLDivElement>(null)
-  const [compact, setCompact] = useState(false)
+  const [marginLeft, setMarginLeft] = useState(8)
 
   const sorted = ARRIVAL_ORDER.flatMap((arrival) =>
     people.filter((p) => p.arrival === arrival)
@@ -19,14 +19,19 @@ export function People({ people }: Props) {
 
   useEffect(() => {
     const el = rowRef.current
-    if (!el) return
+    if (!el || sorted.length <= 1) { setMarginLeft(8); return }
 
     const check = () => {
-      // 一度通常サイズに戻して1行に収まるか確認
-      el.classList.remove('people-row--compact')
-      const overflows = el.scrollWidth > el.clientWidth
-      el.classList.toggle('people-row--compact', overflows)
-      setCompact(overflows)
+      const iconEl = el.querySelector<HTMLElement>('.avatar')
+      if (!iconEl) return
+      const n = sorted.length
+      const iconW = iconEl.offsetWidth
+      const containerW = el.clientWidth
+      // n個のアイコンをcontainerW内に収めるのに必要なmargin-left
+      // total = iconW + (n-1) * (iconW + margin) = containerW
+      const needed = (containerW - n * iconW) / (n - 1)
+      // 最大50%まで重ねる。余裕がある場合はデフォルトのgap(8px)
+      setMarginLeft(Math.max(-iconW * 0.5, Math.min(8, needed)))
     }
 
     const observer = new ResizeObserver(check)
@@ -45,12 +50,13 @@ export function People({ people }: Props) {
 
   return (
     <div className="people">
-      <div
-        ref={rowRef}
-        className={`people-row${compact ? ' people-row--compact' : ''}`}
-      >
-        {sorted.map((person) => (
-          <Avatar key={person.name} person={person} />
+      <div ref={rowRef} className="people-row">
+        {sorted.map((person, i) => (
+          <Avatar
+            key={person.name}
+            person={person}
+            style={i > 0 ? { marginLeft } : undefined}
+          />
         ))}
       </div>
     </div>
