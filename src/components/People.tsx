@@ -17,20 +17,22 @@ export function People({ people }: Props) {
       {people.length === 0 ? (
         <p className="people-empty">—</p>
       ) : (
-        ARRIVAL_ORDER.map((arrival) => {
-          const group = people.filter((p) => p.arrival === arrival)
-          if (group.length === 0) return null
-          return (
-            <div key={arrival} className={`people-group people-group--${arrival}`}>
-              <span className="people-group-label">{ARRIVAL_LABEL[arrival]}</span>
-              <div className="people-list">
-                {group.map((person) => (
-                  <Avatar key={person.name} person={person} />
-                ))}
+        <div className="people-groups">
+          {ARRIVAL_ORDER.map((arrival) => {
+            const group = people.filter((p) => p.arrival === arrival)
+            if (group.length === 0) return null
+            return (
+              <div key={arrival} className={`people-group people-group--${arrival}`}>
+                <span className="people-group-label">{ARRIVAL_LABEL[arrival]}</span>
+                <div className="people-list">
+                  {group.map((person) => (
+                    <Avatar key={person.name} person={person} />
+                  ))}
+                </div>
               </div>
-            </div>
-          )
-        })
+            )
+          })}
+        </div>
       )}
     </div>
   )
