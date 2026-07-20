@@ -4,11 +4,28 @@ import { TimeBlock } from './TimeBlock'
 
 /** 画面全体。データを受け取り各部に配る。 */
 export function Board() {
-  const data = useBoardData()
+  const { data, status } = useBoardData()
+
+  // 初回取得前はスケルトン表示
+  if (!data) {
+    return (
+      <div className="board board--loading">
+        <p className="board-loading-text">
+          {status === 'error' ? 'データを取得できません' : '読み込み中…'}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="board">
       <Header currentTime={data.currentTime} members={data.presence.members} />
+
+      {status === 'error' && (
+        <div className="board-error-badge" title="最新データの取得に失敗しています">
+          ⚠ 更新エラー
+        </div>
+      )}
 
       <main className="board-grid">
         {data.timeBlocks.map((block) => (

@@ -312,3 +312,30 @@ body {
 .legend-text {
   font-size: clamp(10px, 0.9vw, 13px);
 }
+
+/* --- ローディング / エラー表示 --- */
+
+.board--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.board-loading-text {
+  font-size: clamp(16px, 2vw, 28px);
+  color: var(--ink-soft);
+}
+
+.board-error-badge {
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(200, 60, 60, 0.15);
+  color: #b04040;
+  font-size: clamp(11px, 1vw, 14px);
+  font-weight: 700;
+  z-index: 10;
+}
