@@ -6,11 +6,14 @@ const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? ''
 const FETCH_TIMEOUT_MS = 15_000
 
 /** タイムアウト付きでJSONを取得する共通ヘルパー */
-export async function fetchJson<T>(url: string): Promise<T> {
+export async function fetchJson<T>(
+  url: string,
+  headers?: HeadersInit,
+): Promise<T> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
   try {
-    const res = await fetch(url, { signal: controller.signal })
+    const res = await fetch(url, { signal: controller.signal, headers })
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}: ${url}`)
     }

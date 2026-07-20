@@ -4,6 +4,9 @@ import { fetchJson } from './board'
 const STAYWATCH_BASE_URL: string = import.meta.env.VITE_STAYWATCH_BASE_URL ?? ''
 const STAYWATCH_PRESENCE_PATH: string =
   import.meta.env.VITE_STAYWATCH_PRESENCE_PATH ?? ''
+// NOTE: このキーはビルド後のJSに埋め込まれ、ブラウザから閲覧可能になる。
+// StayWatch側の在室APIがサーバー間通信のみを想定していない前提での運用判断。
+const STAYWATCH_API_KEY: string = import.meta.env.VITE_STAYWATCH_API_KEY ?? ''
 
 /**
  * StayWatch の在室者APIのレスポンス想定。
@@ -27,6 +30,7 @@ export async function fetchPresence(): Promise<PresentMember[]> {
   try {
     const raw = await fetchJson<unknown>(
       `${STAYWATCH_BASE_URL}${STAYWATCH_PRESENCE_PATH}`,
+      STAYWATCH_API_KEY ? { 'X-API-Key': STAYWATCH_API_KEY } : undefined,
     )
     return toPresentMembers(raw)
   } catch {
