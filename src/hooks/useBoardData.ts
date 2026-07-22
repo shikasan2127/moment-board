@@ -3,7 +3,7 @@ import { useClock } from './useClock'
 import { mockBoardData } from '../mockData'
 import { fetchBoardData } from '../api/board'
 import { fetchPresence } from '../api/presence'
-import type { BoardData } from '../types'
+import type { BoardData, PresentMember } from '../types'
 
 /** ポーリング間隔（5分） */
 const POLL_INTERVAL_MS = 5 * 60 * 1000
@@ -11,6 +11,25 @@ const POLL_INTERVAL_MS = 5 * 60 * 1000
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
 export type BoardStatus = 'loading' | 'ok' | 'error'
+
+/**
+ * StayWatch の在室者APIはアバターを返さないため、
+ * /api/board の people（Slackアバター付き）から名前で補完する。
+ */
+function withAvatars(
+  board: BoardData,
+  members: PresentMember[],
+): PresentMember[] {
+  const avatarByName = new Map<string, string>()
+  for (const block of board.timeBlocks) {
+    for (const person of block.people) {
+      if (person.avatarUrl) avatarByName.set(person.name, person.avatarUrl)
+    }
+  }
+  return members.map((m) =>
+    m.avatarUrl ? m : { ...m, avatarUrl: avatarByName.get(m.name) ?? '' },
+  )
+}
 
 export interface BoardState {
   /** 表示データ。初回取得前は null（スケルトン表示） */
@@ -42,15 +61,19 @@ export function useBoardData(): BoardState {
     }
 
     let cancelled = false
+    const controller = new AbortController()
 
     const load = async () => {
       try {
         const [board, presenceMembers] = await Promise.all([
-          fetchBoardData(),
-          fetchPresence(),
+          fetchBoardData(controller.signal),
+          fetchPresence(controller.signal),
         ])
         if (cancelled) return
-        setData({ ...board, presence: { members: presenceMembers } })
+        setData({
+          ...board,
+          presence: { members: withAvatars(board, presenceMembers) },
+        })
         setStatus('ok')
       } catch {
         if (cancelled) return
@@ -62,6 +85,7 @@ export function useBoardData(): BoardState {
     const timer = setInterval(load, POLL_INTERVAL_MS)
     return () => {
       cancelled = true
+      controller.abort()
       clearInterval(timer)
     }
   }, [])

@@ -4,6 +4,7 @@ import { fetchJson } from './board'
 const STAYWATCH_BASE_URL: string = import.meta.env.VITE_STAYWATCH_BASE_URL ?? ''
 const STAYWATCH_PRESENCE_PATH: string =
   import.meta.env.VITE_STAYWATCH_PRESENCE_PATH ?? ''
+const STAYWATCH_API_KEY: string = import.meta.env.VITE_STAYWATCH_API_KEY ?? ''
 
 /**
  * StayWatch の在室者APIのレスポンス想定。
@@ -20,13 +21,19 @@ interface StayWatchStayer {
  * StayWatch 本体から現在の在室者を直接取得し PresentMember[] に変換する。
  * URL未設定・取得失敗時は空配列を返す（在室セクションは空表示になる）。
  */
-export async function fetchPresence(): Promise<PresentMember[]> {
+export async function fetchPresence(
+  signal?: AbortSignal,
+): Promise<PresentMember[]> {
   if (!STAYWATCH_BASE_URL || !STAYWATCH_PRESENCE_PATH) {
     return []
   }
   try {
     const raw = await fetchJson<unknown>(
       `${STAYWATCH_BASE_URL}${STAYWATCH_PRESENCE_PATH}`,
+      {
+        headers: STAYWATCH_API_KEY ? { 'X-API-Key': STAYWATCH_API_KEY } : undefined,
+        signal,
+      },
     )
     return toPresentMembers(raw)
   } catch {
