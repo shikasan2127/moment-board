@@ -1,10 +1,12 @@
 import { useBoardData } from '../hooks/useBoardData'
+import { useAutoReload } from '../hooks/useAutoReload'
 import { Header } from './Header'
 import { TimeBlock } from './TimeBlock'
 
 /** 画面全体。データを受け取り各部に配る。 */
 export function Board() {
   const { data, status } = useBoardData()
+  useAutoReload()
 
   // 初回取得前はスケルトン表示
   if (!data) {
