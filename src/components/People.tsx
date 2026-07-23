@@ -1,30 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Arrival, Person } from '../types'
+import type { Person } from '../types'
 import { Avatar } from './Avatar'
 
-interface Props {
+interface RowProps {
   people: Person[]
 }
 
-const ARRIVAL_ORDER: Arrival[] = ['likely', 'maybe']
-
-/** 来訪しそうな人を1行で表示。多い時はアイコンを重ねて収める。 */
-export function People({ people }: Props) {
+/** アバターの1行。多い時はアイコンを重ねて収める。 */
+function PeopleRow({ people }: RowProps) {
   const rowRef = useRef<HTMLDivElement>(null)
   const [marginLeft, setMarginLeft] = useState(8)
 
-  const sorted = ARRIVAL_ORDER.flatMap((arrival) =>
-    people.filter((p) => p.arrival === arrival)
-  )
-
   useEffect(() => {
     const el = rowRef.current
-    if (!el || sorted.length <= 1) { setMarginLeft(8); return }
+    if (!el || people.length <= 1) { setMarginLeft(8); return }
 
     const check = () => {
       const iconEl = el.querySelector<HTMLElement>('.avatar')
       if (!iconEl) return
-      const n = sorted.length
+      const n = people.length
       const iconW = iconEl.offsetWidth
       const containerW = el.clientWidth
       // n個のアイコンをcontainerW内に収めるのに必要なmargin-left
@@ -38,9 +32,31 @@ export function People({ people }: Props) {
     observer.observe(el)
     check()
     return () => observer.disconnect()
-  }, [sorted.length])
+  }, [people.length])
 
-  if (sorted.length === 0) {
+  return (
+    <div ref={rowRef} className="people-row">
+      {people.map((person, i) => (
+        <Avatar
+          key={person.name}
+          person={person}
+          style={i > 0 ? { marginLeft } : undefined}
+        />
+      ))}
+    </div>
+  )
+}
+
+interface Props {
+  people: Person[]
+}
+
+/** 来訪しそうな人を「来そう」「来るかも」の2行に分けて表示。多い時はアイコンを重ねて収める。 */
+export function People({ people }: Props) {
+  const likely = people.filter((p) => p.arrival === 'likely')
+  const maybe = people.filter((p) => p.arrival === 'maybe')
+
+  if (likely.length === 0 && maybe.length === 0) {
     return (
       <div className="people">
         <p className="people-empty">—</p>
@@ -50,15 +66,8 @@ export function People({ people }: Props) {
 
   return (
     <div className="people">
-      <div ref={rowRef} className="people-row">
-        {sorted.map((person, i) => (
-          <Avatar
-            key={person.name}
-            person={person}
-            style={i > 0 ? { marginLeft } : undefined}
-          />
-        ))}
-      </div>
+      {likely.length > 0 && <PeopleRow people={likely} />}
+      {maybe.length > 0 && <PeopleRow people={maybe} />}
     </div>
   )
 }

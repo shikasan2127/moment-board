@@ -198,6 +198,9 @@ body {
 /* ====== いそうな人 ====== */
 .people {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .people-row {
