@@ -37,6 +37,13 @@ body {
   flex-direction: column;
   padding: clamp(12px, 1.4vw, 22px);
   gap: clamp(8px, 1vw, 14px);
+  filter: brightness(1);
+  transition: filter 1s ease;
+}
+
+/* 22時〜翌9時は共有モニターの眩しさ・焼き付き防止のため減光する */
+.board--night {
+  filter: brightness(0.35);
 }
 
 /* ====== ヘッダー ====== */
@@ -337,7 +344,7 @@ body {
   padding: 4px 10px;
   border-radius: 8px;
   background: rgba(200, 60, 60, 0.15);
-  color: #b04040;
+  color: #8a2e2e;
   font-size: clamp(11px, 1vw, 14px);
   font-weight: 700;
   z-index: 10;

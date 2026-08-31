@@ -1,5 +1,6 @@
 import { useBoardData } from '../hooks/useBoardData'
 import { useAutoReload } from '../hooks/useAutoReload'
+import { useNightMode } from '../hooks/useNightMode'
 import { Header } from './Header'
 import { TimeBlock } from './TimeBlock'
 
@@ -7,11 +8,12 @@ import { TimeBlock } from './TimeBlock'
 export function Board() {
   const { data, status } = useBoardData()
   useAutoReload()
+  const isNight = useNightMode()
 
   // 初回取得前はスケルトン表示
   if (!data) {
     return (
-      <div className="board board--loading">
+      <div className={`board board--loading${isNight ? ' board--night' : ''}`}>
         <p className="board-loading-text">
           {status === 'error' ? 'データを取得できません' : '読み込み中…'}
         </p>
@@ -20,7 +22,7 @@ export function Board() {
   }
 
   return (
-    <div className="board">
+    <div className={`board${isNight ? ' board--night' : ''}`}>
       <Header currentTime={data.currentTime} members={data.presence.members} />
 
       {status === 'error' && (
