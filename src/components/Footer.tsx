@@ -1,14 +1,10 @@
-import { FaceIcon } from './FaceIcon'
-import { LIKELIHOOD_LABEL } from '../config'
-import type { Likelihood, PresentMember } from '../types'
+import type { BoardPerson } from '../types'
 
 interface Props {
-  members: PresentMember[]
+  members: BoardPerson[]
 }
 
-const LEGEND: Likelihood[] = ['high', 'mid', 'low']
-
-/** 在室情報（アイコン＋人数）＋凡例 */
+/** 在室情報（アイコン＋人数）。現状 Board.tsx からは未使用。 */
 export function Footer({ members }: Props) {
   return (
     <footer className="board-footer">
@@ -28,16 +24,6 @@ export function Footer({ members }: Props) {
           </div>
         )}
       </div>
-
-      <span className="legend">
-        <span className="legend-label">凡例</span>
-        {LEGEND.map((level) => (
-          <span key={level} className="legend-item">
-            <FaceIcon level={level} size={20} />
-            <span className="legend-text">{LIKELIHOOD_LABEL[level]}</span>
-          </span>
-        ))}
-      </span>
     </footer>
   )
 }

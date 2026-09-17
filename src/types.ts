@@ -1,49 +1,43 @@
-// 表示データの型定義。
-// この型はそのまま将来のAPIレスポンス仕様の叩き台となる。
+// 表示データの型定義。stay-watch-slackbot の GET /api/board のレスポンスと対応する。
+// 詳細な契約は docs/SERVER_REQUIREMENTS.md を参照。
 
-/** 活動の発生しそう度（表情アイコンに対応） */
-export type Likelihood = 'high' | 'mid' | 'low'
-
-/** メンバーの来訪しそう度合い（来そう / 来るかも） */
-export type Arrival = 'likely' | 'maybe'
-
-/** 時間帯のID */
-export type TimeBlockId = 'noon' | 'evening' | 'night'
-
-/** 活動1件 */
-export interface Activity {
-  name: string
-  likelihood: Likelihood
-  /** その活動に集まりそうな人数（予想参加人数） */
-  headcount: number
-}
-
-/** 人物1件（今後きそうな人） */
-export interface Person {
-  name: string
-  avatarUrl: string
-  arrival: Arrival
-}
-
-/** 現在すでに在室している人 */
-export interface PresentMember {
+/** 人物1件（メンバー・在室予測者共通） */
+export interface BoardPerson {
   name: string
   avatarUrl: string
 }
 
-/** 1時間帯（昼 / 夕方 / 夜） */
-export interface TimeBlock {
-  id: TimeBlockId
-  label: string // 「昼」など
-  range: string // 「〜15時」など
-  isNow: boolean
-  activities: Activity[]
-  people: Person[]
+/** 活動1件（その時間帯に成立しそうな活動） */
+export interface BoardActivity {
+  id: number
+  name: string
+  /** 活動ロゴ画像URL。未登録の場合は null */
+  imageUrl: string | null
+  /** 成立に必要な最低人数 */
+  minNumber: number
+  /** その時間帯に在室していそうで、かつ関心のあるメンバー */
+  members: BoardPerson[]
+}
+
+/** タイムライン1時間ぶんの表示データ */
+export interface BoardHour {
+  /** 時（JST、0〜23） */
+  hour: number
+  /** この時間に在室していそうな人一覧 */
+  people: BoardPerson[]
+  /** この時間に成立しそうな活動一覧 */
+  activities: BoardActivity[]
+}
+
+/** 現在の在室情報 */
+export interface BoardPresence {
+  members: BoardPerson[]
 }
 
 /** 画面全体に渡す表示データ */
 export interface BoardData {
   currentTime: string
-  presence: { members: PresentMember[] }
-  timeBlocks: TimeBlock[]
+  presence: BoardPresence
+  /** 現在時刻から最大4時間ぶんのタイムライン（1時間ごと） */
+  hours: BoardHour[]
 }

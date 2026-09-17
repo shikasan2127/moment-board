@@ -1,14 +1,16 @@
 import { useBoardData } from '../hooks/useBoardData'
 import { useAutoReload } from '../hooks/useAutoReload'
 import { useNightMode } from '../hooks/useNightMode'
+import { useScreenCycle } from '../hooks/useScreenCycle'
 import { Header } from './Header'
-import { TimeBlock } from './TimeBlock'
+import { HourGrid } from './HourGrid'
 
 /** 画面全体。データを受け取り各部に配る。 */
 export function Board() {
   const { data, status } = useBoardData()
   useAutoReload()
   const isNight = useNightMode()
+  const screenMode = useScreenCycle()
 
   // 初回取得前はスケルトン表示
   if (!data) {
@@ -31,15 +33,9 @@ export function Board() {
         </div>
       )}
 
-      <main className="board-grid">
-        {data.timeBlocks.map((block) => (
-          <TimeBlock
-            key={block.id}
-            block={block}
-            presentCount={data.presence.members.length}
-          />
-        ))}
-      </main>
+      <div className="board-screen" key={screenMode}>
+        <HourGrid hours={data.hours} mode={screenMode} />
+      </div>
     </div>
   )
 }

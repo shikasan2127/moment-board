@@ -1,8 +1,8 @@
-import type { PresentMember } from '../types'
+import type { BoardPerson } from '../types'
 
 interface Props {
   currentTime: string
-  members: PresentMember[]
+  members: BoardPerson[]
 }
 
 /** タイトル＋在室アイコン＋現在時刻 */
