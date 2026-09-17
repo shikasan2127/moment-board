@@ -32,18 +32,32 @@ body {
 
 /* ====== ボード全体 ====== */
 .board {
+  position: relative;
   height: 100vh;
   display: flex;
   flex-direction: column;
   padding: clamp(12px, 1.4vw, 22px);
   gap: clamp(8px, 1vw, 14px);
-  filter: brightness(1);
-  transition: filter 1s ease;
 }
 
-/* 22時〜翌9時は共有モニターの眩しさ・焼き付き防止のため減光する */
-.board--night {
-  filter: brightness(0.35);
+/*
+ * 22時〜翌9時は共有モニターの眩しさ・焼き付き防止のため画面全体を暗くする。
+ * filter: brightness() だと明るい色（白いカード等）が暗いグレーにしかならず
+ * 「画面全体が暗くなった」感が出ないため、黒い全画面オーバーレイを重ねる方式にする。
+ */
+.board::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+  z-index: 999;
+}
+
+.board--night::after {
+  opacity: 1;
 }
 
 /* ====== ヘッダー ====== */
