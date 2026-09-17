@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useClock } from './useClock'
 import { mockBoardData } from '../mockData'
 import { fetchBoardData } from '../api/board'
 import { fetchPresence } from '../api/presence'
@@ -48,10 +47,8 @@ export interface BoardState {
  * 保持したまま status を 'error' にする（共有モニターを真っ暗にしない）。
  *
  * VITE_USE_MOCK=true のときは従来どおりモックデータを返す。
- * 現在時刻だけは実時計（useClock）を使って常に最新にしている。
  */
 export function useBoardData(): BoardState {
-  const currentTime = useClock()
   const [data, setData] = useState<BoardData | null>(null)
   const [status, setStatus] = useState<BoardStatus>('loading')
 
@@ -92,8 +89,5 @@ export function useBoardData(): BoardState {
     }
   }, [])
 
-  return {
-    data: data ? { ...data, currentTime } : null,
-    status,
-  }
+  return { data, status }
 }

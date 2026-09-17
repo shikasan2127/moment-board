@@ -5,7 +5,7 @@ interface Props {
   activity: BoardActivity
 }
 
-/** 活動1件：ロゴ＋名前＋参加しそうなメンバー。 */
+/** 活動1件：ロゴ＋参加しそうなメンバー。 */
 export function ActivityCard({ activity }: Props) {
   return (
     <li className="activity-card">
@@ -15,8 +15,6 @@ export function ActivityCard({ activity }: Props) {
         ) : (
           <div className="activity-logo activity-logo--placeholder" aria-hidden="true" />
         )}
-        <span className="activity-name">{activity.name}</span>
-        <span className="activity-min-number">{activity.minNumber}人〜</span>
       </div>
       <PersonGrid people={activity.members} />
     </li>
