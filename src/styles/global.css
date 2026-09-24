@@ -60,6 +60,41 @@ body {
   opacity: 1;
 }
 
+/* ====== ヘッダー ====== */
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(6px, 0.6vw, 10px);
+}
+
+.board-title {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 56px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.board-clock {
+  font-size: clamp(28px, 3.4vw, 56px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-strong);
+}
+
+.header-presence {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.6vw, 10px);
+}
+
+.header-presence-label {
+  font-size: clamp(16px, 1.8vw, 30px);
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
 /* ====== 時間帯の列グリッド（列数は可変。HourGrid がインラインstyleで指定） ====== */
 .board-screen {
   flex: 1;

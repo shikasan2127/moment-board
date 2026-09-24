@@ -2,6 +2,7 @@ import { useBoardData } from '../hooks/useBoardData'
 import { useAutoReload } from '../hooks/useAutoReload'
 import { useNightMode } from '../hooks/useNightMode'
 import { useScreenCycle } from '../hooks/useScreenCycle'
+import { Header } from './Header'
 import { HourGrid } from './HourGrid'
 
 /** 画面全体。データを受け取り各部に配る。 */
@@ -24,6 +25,8 @@ export function Board() {
 
   return (
     <div className={`board${isNight ? ' board--night' : ''}`}>
+      <Header currentTime={data.currentTime} members={data.presence.members} mode={screenMode} />
+
       {status === 'error' && (
         <div className="board-error-badge" title="最新データの取得に失敗しています">
           ⚠ 更新エラー
