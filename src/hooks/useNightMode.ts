@@ -8,8 +8,15 @@ const NIGHT_MODE_END_HOUR = 9
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
+const jstHourFormat = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'Asia/Tokyo',
+  hour: 'numeric',
+  hourCycle: 'h23',
+})
+
 function isNight(date: Date): boolean {
-  return date.getHours() >= NIGHT_MODE_START_HOUR || date.getHours() < NIGHT_MODE_END_HOUR
+  const hour = Number(jstHourFormat.format(date))
+  return hour >= NIGHT_MODE_START_HOUR || hour < NIGHT_MODE_END_HOUR
 }
 
 /**

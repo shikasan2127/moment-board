@@ -13,7 +13,11 @@ export function ActivityCard({ activity }: Props) {
         {activity.imageUrl ? (
           <img src={activity.imageUrl} alt={activity.name} className="activity-logo" />
         ) : (
-          <div className="activity-logo activity-logo--placeholder" aria-hidden="true" />
+          <div
+            className="activity-logo activity-logo--placeholder"
+            role="img"
+            aria-label={activity.name}
+          />
         )}
       </div>
       <PersonGrid people={activity.members} />
