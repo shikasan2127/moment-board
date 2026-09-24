@@ -34,7 +34,11 @@ export function Board() {
       )}
 
       <div className="board-screen" key={screenMode}>
-        <HourGrid hours={data.hours} mode={screenMode} />
+        {data.hours.length === 0 ? (
+          <p className="board-outside-hours">現在は表示対象の時間外です</p>
+        ) : (
+          <HourGrid hours={data.hours} mode={screenMode} />
+        )}
       </div>
     </div>
   )
