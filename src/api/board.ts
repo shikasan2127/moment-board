@@ -6,7 +6,7 @@ const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? ''
 const FETCH_TIMEOUT_MS = 60_000
 
 /** タイムアウト付きでJSONを取得する共通ヘルパー */
-export async function fetchJson<T>(
+async function fetchJson<T>(
   url: string,
   options?: { headers?: HeadersInit; signal?: AbortSignal },
 ): Promise<T> {
