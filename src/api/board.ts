@@ -39,7 +39,6 @@ export async function fetchJson<T>(
 
 /**
  * stay-watch-slackbot の GET /api/board から表示データを取得する。
- * presence はサーバ側では常に空で返るため、別途 fetchPresence で補完する。
  */
 export function fetchBoardData(signal?: AbortSignal): Promise<BoardData> {
   return fetchJson<BoardData>(`${API_BASE_URL}/api/board`, { signal })
