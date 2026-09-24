@@ -32,11 +32,32 @@ body {
 
 /* ====== ボード全体 ====== */
 .board {
+  position: relative;
   height: 100vh;
   display: flex;
   flex-direction: column;
   padding: clamp(12px, 1.4vw, 22px);
   gap: clamp(8px, 1vw, 14px);
+}
+
+/*
+ * 22時〜翌9時は共有モニターの眩しさ・焼き付き防止のため画面全体を暗くする。
+ * filter: brightness() だと明るい色（白いカード等）が暗いグレーにしかならず
+ * 「画面全体が暗くなった」感が出ないため、黒い全画面オーバーレイを重ねる方式にする。
+ */
+.board::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+  z-index: 999;
+}
+
+.board--night::after {
+  opacity: 1;
 }
 
 /* ====== ヘッダー ====== */
@@ -74,11 +95,26 @@ body {
   white-space: nowrap;
 }
 
-/* ====== 3カラムグリッド（昼/夕方/夜を平等に） ====== */
+/* ====== 時間帯の列グリッド（列数は可変。HourGrid がインラインstyleで指定） ====== */
+.board-screen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  animation: board-screen-fade-in 0.6s ease;
+}
+
+@keyframes board-screen-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .board-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: clamp(8px, 1vw, 14px);
   min-height: 0;
 }
@@ -122,69 +158,63 @@ body {
   color: var(--ink-soft);
 }
 
-.time-block-badge {
-  margin-left: auto;
-  background: var(--accent);
-  color: #fff;
-  font-size: clamp(13px, 1.3vw, 20px);
-  font-weight: 700;
-  padding: 4px 14px;
-  border-radius: 999px;
+/* ====== スクロール枠（活動一覧・メンバー一覧 共通） ====== */
+.time-block-scroll {
+  flex: 1;
+  min-height: 0;
 }
 
-.occupancy-value {
-  margin-left: auto;
-  font-size: clamp(32px, 3.8vw, 60px);
-  font-weight: 800;
-  color: var(--accent-strong);
-  font-variant-numeric: tabular-nums;
+.scroll-panel {
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
 }
 
-/* ====== 見出し共通 ====== */
-.activities-heading {
-  margin: 0 0 4px;
-  font-size: clamp(18px, 2vw, 32px);
-  font-weight: 700;
-  color: var(--ink-soft);
+.scroll-panel::-webkit-scrollbar {
+  display: none; /* Chrome/Safari。キオスク表示でスクロールバーを常に隠す */
 }
 
 /* ====== 活動 ====== */
-.time-block-activities {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
 .activity-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 1vw, 16px);
+  gap: clamp(12px, 1.4vw, 22px);
 }
 
-.activity-group {
+.activity-card {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 0.8vw, 10px);
+  padding-bottom: clamp(10px, 1.2vw, 18px);
+  border-bottom: 1.5px dashed var(--line);
+}
+
+.activity-card:last-child {
+  border-bottom: none;
+}
+
+.activity-card-header {
   display: flex;
   align-items: center;
   gap: clamp(8px, 1vw, 16px);
 }
 
-.face-icon {
+.activity-logo {
   flex: 0 0 auto;
+  width: clamp(80px, 9vw, 140px);
+  height: clamp(80px, 9vw, 140px);
+  border-radius: 16px;
+  object-fit: cover;
+  background: var(--bg);
+  border: 1.5px solid var(--line);
 }
 
-.activity-group-names {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(4px, 0.5vw, 8px) clamp(10px, 1.2vw, 18px);
-}
-
-.activity-name {
-  font-size: clamp(26px, 3.4vw, 54px);
-  font-weight: 700;
+.activity-logo--placeholder {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
 }
 
 
@@ -195,28 +225,11 @@ body {
   font-size: clamp(12px, 1.1vw, 16px);
 }
 
-/* ====== いそうな人 ====== */
-.people {
-  flex-shrink: 0;
+/* ====== メンバーアイコン（重ねずに並べる） ====== */
+.person-grid {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.people-row {
-  display: flex;
-  flex-wrap: nowrap;
-}
-
-.people-row .avatar {
-  width: clamp(60px, 7vw, 100px);
-  flex-shrink: 0;
-  position: relative;
-}
-
-/* 後ろのアイコンが前を隠さないよう、左から順に前面に */
-.people-row .avatar:hover {
-  z-index: 10;
+  flex-wrap: wrap;
+  gap: clamp(8px, 1vw, 14px);
 }
 
 .avatar {
@@ -234,11 +247,6 @@ body {
   border: 2px solid var(--line);
   background: #fff;
   object-fit: cover;
-}
-
-.avatar--maybe .avatar-img {
-  filter: grayscale(0.4);
-  border-style: dashed;
 }
 
 .avatar-name {
@@ -337,7 +345,7 @@ body {
   padding: 4px 10px;
   border-radius: 8px;
   background: rgba(200, 60, 60, 0.15);
-  color: #b04040;
+  color: #8a2e2e;
   font-size: clamp(11px, 1vw, 14px);
   font-weight: 700;
   z-index: 10;

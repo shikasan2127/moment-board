@@ -3,7 +3,7 @@ import { useClock } from './useClock'
 import { mockBoardData } from '../mockData'
 import { fetchBoardData } from '../api/board'
 import { fetchPresence } from '../api/presence'
-import type { BoardData, PresentMember } from '../types'
+import type { BoardData, BoardPerson } from '../types'
 
 /** ポーリング間隔（5分） */
 const POLL_INTERVAL_MS = 5 * 60 * 1000
@@ -14,16 +14,18 @@ export type BoardStatus = 'loading' | 'ok' | 'error'
 
 /**
  * StayWatch の在室者APIはアバターを返さないため、
- * /api/board の people（Slackアバター付き）から名前で補完する。
+ * /api/board の hours（Slackアバター付き）から名前で補完する。
  */
-function withAvatars(
-  board: BoardData,
-  members: PresentMember[],
-): PresentMember[] {
+function withAvatars(board: BoardData, members: BoardPerson[]): BoardPerson[] {
   const avatarByName = new Map<string, string>()
-  for (const block of board.timeBlocks) {
-    for (const person of block.people) {
+  for (const hour of board.hours) {
+    for (const person of hour.people) {
       if (person.avatarUrl) avatarByName.set(person.name, person.avatarUrl)
+    }
+    for (const activity of hour.activities) {
+      for (const person of activity.members) {
+        if (person.avatarUrl) avatarByName.set(person.name, person.avatarUrl)
+      }
     }
   }
   return members.map((m) =>

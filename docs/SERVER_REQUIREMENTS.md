@@ -1,7 +1,7 @@
 # サーバサイド要件定義
 
-フロントエンド実装計画書（`IMPLEMENTATION_PLAN.md` §7）の詳細版。
-技術選定・ロジック設計は別途行う。ここでは「何が必要か」のみを記述する。
+`stay-watch-slackbot`（`GET /api/board`）が実際に返すデータ契約。
+実装は `stay-watch-slackbot/src/service/board.go` を正とする。
 
 ---
 
@@ -15,134 +15,93 @@
 GET /api/board
 ```
 
-**レスポンスのイメージ（フロントの型定義と対応）**
+**レスポンスのイメージ（フロントの `src/types.ts` と対応）**
 
 ```json
 {
   "currentTime": "14:23",
   "presence": {
-    "members": [
-      { "name": "enami", "avatarUrl": "/avatars/enami.png" }
-    ]
+    "members": []
   },
-  "timeBlocks": [
+  "hours": [
     {
-      "id": "noon",
-      "label": "昼",
-      "range": "〜15時",
-      "isNow": true,
-      "activities": [
-        { "name": "スマブラ", "likelihood": "high" }
-      ],
+      "hour": 15,
       "people": [
-        { "name": "hanada", "avatarUrl": "...", "arrival": "likely" }
+        { "name": "hanada", "avatarUrl": "https://.../hanada.png" }
+      ],
+      "activities": [
+        {
+          "id": 5,
+          "name": "人狼",
+          "imageUrl": "https://.../daycast/events/5.png",
+          "minNumber": 3,
+          "members": [
+            { "name": "hanada", "avatarUrl": "https://.../hanada.png" }
+          ]
+        }
       ]
     }
   ]
 }
 ```
 
-- `likelihood`: `"high" | "mid" | "low"`（確率→段階への変換はサーバ側で行う）
-- `arrival`: `"likely" | "maybe"`（同上）
-- 時間帯は固定で `noon` / `evening` / `night` の3つ
-- 活動・人物の数は可変（ゼロでも可）
+- `hours` は現在時刻の列を先頭に、最大4列（現在時刻〜3時間後まで、1時間ごと）。`boardHourEnd`（19時）を超える列は出さないため、夜間は列数が減っていく
+- `presence.members` は常に空配列。現在の在室者はフロントが StayWatch の在室APIから別途取得して補完する（`src/api/presence.ts`, `src/hooks/useBoardData.ts`）
+- `hours[].people`: その時間帯に在室していそうなメンバー（来訪確率が `BOARD_ARRIVAL_MAYBE_THRESHOLD` 以上、かつ予測来訪/退室時刻がその時間帯と重なる人）
+- `hours[].activities`: その時間帯に成立しそうな活動。以下の**両方**を満たす活動のみを含む
+  1. その時間帯に在室していそうで、かつ活動に関心があるメンバーが `minNumber` 人以上そろう
+  2. その活動のGMM時間帯確率（`GetAllActivityProbabilities`）が `BOARD_ACTIVITY_PROBABILITY_THRESHOLD` 以上
+- 旧仕様にあった `likelihood`（表情アイコン段階）・`arrival`（来訪度合い）・固定3区分（`noon`/`evening`/`night`）は廃止済み
 
 ---
 
-## 2. 内部で必要な処理
+## 2. 内部で必要な処理（実装済み）
 
-### 2-1. 時間帯への集約
+### 2-1. 時間帯の算出
 
-既存の「時刻単位の確率API」から、昼・夕方・夜の各時間帯の代表確率を算出する。
+`boardHourRange`（`board.go`）が、現在時刻を先頭に最大4時間ぶんの列を返す。`boardHourStart`(11時)より前は11時始まりに、`boardHourEnd`(19時)を超える列は出さない。
 
-| 時間帯 | 時刻範囲（仮・後日確定） |
-|--------|--------------------------|
-| 昼     | 11:00〜15:00             |
-| 夕方   | 15:00〜19:00             |
-| 夜     | 19:00〜                  |
+### 2-2. 在室予測メンバーの算出
 
-- 時刻範囲内の確率の最大値・平均値などを代表値とする（方針は後日決定）
+`collectBoardPeople` が、来訪確率が `BOARD_ARRIVAL_MAYBE_THRESHOLD` 以上のユーザーについて、StayWatchの来訪・退室予測時刻（分単位）を取得し、`isPresentAtHour` で時間帯ごとの在室有無を判定する。
 
-### 2-2. 活動の絞り込み
+### 2-3. 活動の絞り込み（時間帯単位）
 
-各時間帯で、発生確率が閾値以上の活動だけをレスポンスに含める。
+`buildBoardActivitiesForHour` が、時間帯ごとに以下を判定する。
 
-- 閾値は設定値として管理（ハードコードしない）
-- `likelihood` への変換ルール（例）:
-  - `high`: 確率 70% 以上
-  - `mid`: 確率 40〜70%
-  - `low`: 確率 40% 未満
+- 人数条件: その時間帯に在室していそうで活動に関心があるメンバーが `event.MinNumber` 人以上
+- 確率条件: `activity.go` の `GetAllActivityProbabilities`（イベントのログ履歴からGMMで算出した時間帯別発生確率）が閾値 `config.Board.ActivityProbability`（環境変数 `BOARD_ACTIVITY_PROBABILITY_THRESHOLD`、既定 `0.3`）以上
 
-### 2-3. 来訪メンバーの集約
-
-各時間帯に来訪しそうなメンバーとその度合いを返す。
-
-- `arrival` への変換ルール（例）:
-  - `likely`: 確率 60% 以上
-  - `maybe`: 確率 30〜60%
-  - それ未満はレスポンスに含めない
+両方を満たす活動だけをその時間帯の `activities` に含める。
 
 ### 2-4. 在室情報の提供
 
-現在の在室メンバー一覧を返す。取得元は後日決定（Slack ステータス / 入退室センサー 等）。
+現在の在室メンバー一覧は `BoardData.Presence` では常に空配列を返す。フロントエンドが StayWatch の在室APIから直接取得する（サーバ経由にしない）。
 
 ---
 
 ## 3. Slack連携
 
-### 3-1. アバター画像URLの取得とキャッシュ
+### 3-1. アバター画像URLの取得
 
-Slack APIを毎リクエストで叩くのを避けるため、URLをサーバ側でキャッシュする。
+`user.IconURL`（`model/user.go`）に、Slackから取得したアイコンURLを保存する。`fetchSlackIconURL`（`service/user.go`）で取得し、`POST /api/users/icons/refresh` で全ユーザー分を再取得できる。
 
-**フロー**
+### 3-2. 活動ロゴ画像URLの取得
 
-```
-初回アクセス
-  → Slack API (users.info) でアバターURLを取得
-  → DBに保存（avatar_url, avatar_cached_at）
-  → フロントに返す
-
-以降のアクセス
-  → キャッシュが新鮮（例: 24時間以内）ならDBから返す
-  → 古ければバックグラウンドで再取得し更新
-```
-
-**必要なDB項目（usersテーブルに追加）**
-
-| カラム | 型 | 内容 |
-|--------|----|------|
-| `slack_user_id` | string | SlackのユーザーID |
-| `avatar_url` | string | アバター画像のURL |
-| `avatar_cached_at` | datetime | 最終取得日時 |
-
-**キャッシュ有効期限**: 24時間（暫定。変更可）
-
-### 3-2. 使用するSlack API
-
-| API | 用途 |
-|-----|------|
-| `users.info` | アバターURL・表示名の取得 |
-| `users.getPresence` | 在室判定（採用するか後日検討） |
+`EventImageURL(ev.ImageKey)`（`service/event_image.go`）が、オブジェクトストレージ（S3互換）に保存された画像キーから公開URLを組み立てて返す。未登録の場合は `null`。
 
 ---
 
-## 4. データ更新方式（未決定）
+## 4. データ更新方式
 
-| 方式 | メリット | デメリット |
-|------|----------|------------|
-| ポーリング（例: 1分ごと） | 実装シンプル | 若干のラグあり |
-| WebSocket | リアルタイム | サーバ実装コスト増 |
-| SSE（Server-Sent Events） | 中間案。サーバ→クライアントのみ | やや特殊 |
-
-モニター表示用途（1分単位の精度で十分）のため、**ポーリングを第一候補**とする。
+フロントエンドは `GET /api/board` と StayWatchの在室APIを5分間隔でポーリングする（`useBoardData.ts` の `POLL_INTERVAL_MS`）。取得失敗時は最後に成功したデータを保持したまま `status: 'error'` にする。
 
 ---
 
-## 5. 未決定事項
+## 5. 設定値（環境変数）
 
-- [ ] 時間帯の具体的な時刻範囲
-- [ ] `likelihood` / `arrival` への変換閾値
-- [ ] 在室情報の取得元（Slackステータス / センサー / 手動入力）
-- [ ] データ更新方式（ポーリング間隔含む）
-- [ ] 既存2API（活動確率・来訪確率）を束ねる集約APIを新設するか、サーバ内で直接呼ぶか
-- [ ] アバターキャッシュの有効期限
+| 環境変数 | 用途 | 既定値 |
+|----------|------|--------|
+| `BOARD_ARRIVAL_LIKELY_THRESHOLD` | 来訪確率のしきい値（現状レスポンスには未使用、再調整余地として保持） | 0.5 |
+| `BOARD_ARRIVAL_MAYBE_THRESHOLD` | 「来訪・在室していそう」の足切りしきい値 | 0.3 |
+| `BOARD_ACTIVITY_PROBABILITY_THRESHOLD` | 活動の時間帯別GMM確率のしきい値。これ未満の活動はその時間帯の一覧に出さない | 0.3 |

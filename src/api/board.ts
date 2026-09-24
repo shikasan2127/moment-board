@@ -3,7 +3,7 @@ import type { BoardData } from '../types'
 const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? ''
 
 /** fetch のタイムアウト（ミリ秒）。stay-watch-slackbot がSlack APIを呼ぶ都合で応答が変動するため長めに設定 */
-const FETCH_TIMEOUT_MS = 30_000
+const FETCH_TIMEOUT_MS = 60_000
 
 /** タイムアウト付きでJSONを取得する共通ヘルパー */
 export async function fetchJson<T>(

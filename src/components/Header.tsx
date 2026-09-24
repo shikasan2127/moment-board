@@ -1,15 +1,22 @@
-import type { PresentMember } from '../types'
+import type { BoardPerson } from '../types'
+import type { ScreenMode } from '../hooks/useScreenCycle'
+
+const TITLES: Record<ScreenMode, string> = {
+  activities: '今日の活動予測',
+  presence: '今日の在室予測',
+}
 
 interface Props {
   currentTime: string
-  members: PresentMember[]
+  members: BoardPerson[]
+  mode: ScreenMode
 }
 
 /** タイトル＋在室アイコン＋現在時刻 */
-export function Header({ currentTime, members }: Props) {
+export function Header({ currentTime, members, mode }: Props) {
   return (
     <header className="board-header">
-      <h1 className="board-title">今日の研究室</h1>
+      <h1 className="board-title">{TITLES[mode]}</h1>
       {members.length > 0 && (
         <div className="header-presence">
           <span className="header-presence-label">現在の在室者</span>

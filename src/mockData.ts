@@ -1,67 +1,97 @@
-// サーバ実装前の仮データ。確定デザイン（計画書 §2）を再現する。
-// 将来は useBoardData の中でAPIレスポンスに差し替える。
+// サーバ未接続時の開発用モックデータ（VITE_USE_MOCK=true で使用）。
+// 1時間帯に多人数・多活動を含め、スクロール動作を確認できるようにしている。
 //
 // アバター画像は public/avatars/ の実画像を参照する。
 
-import type { BoardData } from './types'
+import type { BoardData, BoardPerson } from './types'
+
+function person(name: string): BoardPerson {
+  return { name, avatarUrl: `/avatars/${name}.png` }
+}
+
+const MEMBERS = [
+  'enami',
+  'nakamura',
+  'hanada',
+  'hayashi',
+  'natsuki',
+  'hiroto',
+  'niwa',
+  'ryuki',
+  'tada',
+  'gomamono',
+]
 
 export const mockBoardData: BoardData = {
   currentTime: '14:23',
   presence: {
-    members: [
-      { name: 'enami', avatarUrl: '/avatars/enami.png' },
-      { name: 'nakamura', avatarUrl: '/avatars/nakamura.png' },
-    ],
+    members: [person('enami'), person('nakamura')],
   },
-  timeBlocks: [
+  hours: [
     {
-      id: 'noon',
-      label: '昼',
-      range: '〜15時',
-      isNow: true,
+      hour: 14,
+      people: MEMBERS.slice(0, 8).map(person),
       activities: [
-        { name: 'スマブラ', likelihood: 'high', headcount: 4 },
-        { name: 'ボードゲーム', likelihood: 'mid', headcount: 3 },
-        { name: '麻雀', likelihood: 'low', headcount: 4 },
-      ],
-      people: [
-        { name: 'hanada', avatarUrl: '/avatars/hanada.png', arrival: 'likely' },
-        { name: 'hayashi', avatarUrl: '/avatars/hayashi.png', arrival: 'likely' },
-        { name: 'natsuki', avatarUrl: '/avatars/natsuki.png', arrival: 'maybe' },
+        {
+          id: 1,
+          name: 'スマブラ',
+          imageUrl: null,
+          minNumber: 3,
+          members: MEMBERS.slice(0, 4).map(person),
+        },
+        {
+          id: 2,
+          name: 'ボードゲーム',
+          imageUrl: null,
+          minNumber: 3,
+          members: MEMBERS.slice(2, 6).map(person),
+        },
+        {
+          id: 3,
+          name: '麻雀',
+          imageUrl: null,
+          minNumber: 4,
+          members: MEMBERS.slice(4, 8).map(person),
+        },
+        {
+          id: 4,
+          name: '人狼',
+          imageUrl: null,
+          minNumber: 5,
+          members: MEMBERS.slice(0, 7).map(person),
+        },
       ],
     },
     {
-      id: 'evening',
-      label: '夕方',
-      range: 'もうすぐ',
-      isNow: false,
+      hour: 15,
+      people: MEMBERS.slice(1, 5).map(person),
       activities: [
-        { name: 'カタン', likelihood: 'high', headcount: 4 },
-        { name: 'スマブラ', likelihood: 'high', headcount: 5 },
-        { name: '麻雀', likelihood: 'mid', headcount: 4 },
-        { name: '人狼', likelihood: 'low', headcount: 7 },
-      ],
-      people: [
-        { name: 'hayashi', avatarUrl: '/avatars/hayashi.png', arrival: 'likely' },
-        { name: 'natsuki', avatarUrl: '/avatars/natsuki.png', arrival: 'likely' },
-        { name: 'hiroto', avatarUrl: '/avatars/hiroto.png', arrival: 'likely' },
-        { name: 'niwa', avatarUrl: '/avatars/niwa.png', arrival: 'maybe' },
+        {
+          id: 5,
+          name: 'カタン',
+          imageUrl: null,
+          minNumber: 4,
+          members: MEMBERS.slice(1, 5).map(person),
+        },
       ],
     },
     {
-      id: 'night',
-      label: '夜',
-      range: '19時〜',
-      isNow: false,
+      hour: 16,
+      people: MEMBERS.slice(3, 6).map(person),
       activities: [
-        { name: 'スマブラ', likelihood: 'mid', headcount: 3 },
-        { name: 'マリカ', likelihood: 'low', headcount: 4 },
+        {
+          id: 6,
+          name: 'マリオカート',
+          imageUrl: null,
+          minNumber: 2,
+          members: MEMBERS.slice(3, 6).map(person),
+        },
       ],
-      people: [
-        { name: 'ryuki', avatarUrl: '/avatars/ryuki.png', arrival: 'maybe' },
-        { name: 'tada', avatarUrl: '/avatars/tada.png', arrival: 'maybe' },
-        { name: 'gomamono', avatarUrl: '/avatars/gomamono.png', arrival: 'maybe' },
-      ],
+    },
+    {
+      hour: 17,
+      people: [],
+      activities: [],
     },
   ],
 }

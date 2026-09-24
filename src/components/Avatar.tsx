@@ -1,27 +1,15 @@
-import type { CSSProperties } from 'react'
-import type { Person } from '../types'
-import { arrivalToOpacity, ARRIVAL_LABEL } from '../config'
+import type { BoardPerson } from '../types'
 
 interface Props {
-  person: Person
-  style?: CSSProperties
+  person: BoardPerson
 }
 
-/** アバター1件。来訪しそう度合いで減光（来るかも=減光）。 */
-export function Avatar({ person, style }: Props) {
-  const opacity = arrivalToOpacity(person.arrival)
+/** メンバー1人分のアイコン＋名前。 */
+export function Avatar({ person }: Props) {
   return (
-    <div
-      className={`avatar avatar--${person.arrival}`}
-      title={`${person.name}（${ARRIVAL_LABEL[person.arrival]}）`}
-      style={style}
-    >
-      <img
-        src={person.avatarUrl}
-        alt={person.name}
-        style={{ opacity }}
-        className="avatar-img"
-      />
+    <div className="avatar" title={person.name}>
+      <img src={person.avatarUrl} alt={person.name} className="avatar-img" />
+      <span className="avatar-name">{person.name}</span>
     </div>
   )
 }
