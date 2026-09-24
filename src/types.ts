@@ -1,5 +1,4 @@
 // 表示データの型定義。stay-watch-slackbot の GET /api/board のレスポンスと対応する。
-// 詳細な契約は docs/SERVER_REQUIREMENTS.md を参照。
 
 /** 人物1件（メンバー・在室予測者共通） */
 export interface BoardPerson {
